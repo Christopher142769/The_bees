@@ -999,25 +999,6 @@ button {
   transform: translate3d(0, var(--members-grid-y, 0px), 0);
 }
 
-@supports (animation-timeline: view()) {
-  .members-grid--parallax .member-card {
-    animation: memberHiveReveal linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 38%;
-  }
-}
-
-@keyframes memberHiveReveal {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 44px, 0) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
 .section-head h2 {
   margin: 0 0 12px;
   font-size: clamp(2rem, 4.2vw, 3rem);
