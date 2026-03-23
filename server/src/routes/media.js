@@ -1,17 +1,15 @@
 import { Router } from "express";
-import fs from "fs";
-import path from "path";
 import Media from "../models/Media.js";
 import SiteSettings from "../models/SiteSettings.js";
 import { requireAuth } from "../middleware/auth.js";
-import { uploadMediaFile, uploadDir } from "../middleware/upload.js";
+import { uploadMediaFile } from "../middleware/upload.js";
+import {
+  destroyImage,
+  isCloudinaryConfigured,
+  uploadImageBuffer,
+} from "../lib/cloudinary.js";
 
 const router = Router();
-
-function fileFromPublicPath(publicPath) {
-  const rel = publicPath.replace(/^\/uploads\//, "");
-  return path.join(uploadDir, rel);
-}
 
 router.get("/", requireAuth, async (_req, res) => {
   const list = await Media.find().sort({ createdAt: -1 }).lean();
@@ -28,15 +26,25 @@ router.post(
     });
   },
   async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: "Fichier requis" });
+    try {
+      if (!isCloudinaryConfigured()) {
+        return res
+          .status(500)
+          .json({ error: "Cloudinary non configuré côté serveur" });
+      }
+      if (!req.file) {
+        return res.status(400).json({ error: "Fichier requis" });
+      }
+      const result = await uploadImageBuffer(req.file, "the-bees/media");
+      const doc = await Media.create({
+        path: result.secure_url,
+        publicId: result.public_id,
+        originalName: req.file.originalname || "",
+      });
+      res.status(201).json(doc);
+    } catch (e) {
+      res.status(400).json({ error: e.message || "Upload impossible" });
     }
-    const publicPath = `/uploads/media/${req.file.filename}`;
-    const doc = await Media.create({
-      path: publicPath,
-      originalName: req.file.originalname || "",
-    });
-    res.status(201).json(doc);
   }
 );
 
@@ -54,9 +62,8 @@ router.delete("/:id", requireAuth, async (req, res) => {
     }
   }
 
-  const full = fileFromPublicPath(doc.path);
   try {
-    if (fs.existsSync(full)) fs.unlinkSync(full);
+    await destroyImage(doc.publicId);
   } catch {
     /* ignore */
   }

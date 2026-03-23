@@ -5,6 +5,7 @@ const siteSettingsSchema = new mongoose.Schema(
     heroImagePath: { type: String, default: "" },
     hiveImagePath: { type: String, default: "" },
     logoPath: { type: String, default: "" },
+    logoPublicId: { type: String, default: "" },
   },
   { timestamps: true }
 );

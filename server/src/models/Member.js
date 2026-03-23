@@ -11,6 +11,7 @@ const memberSchema = new mongoose.Schema(
       default: "autre",
     },
     photoPath: { type: String, default: "" },
+    photoPublicId: { type: String, default: "" },
     order: { type: Number, default: 0 },
     quiJeSuis: { type: String, default: "" },
     ceQuiMeMotive: { type: String, default: "" },

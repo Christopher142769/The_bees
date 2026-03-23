@@ -10,7 +10,6 @@ import membersRoutes from "./routes/members.js";
 import suggestionsRoutes from "./routes/suggestions.js";
 import mediaRoutes from "./routes/media.js";
 import settingsRoutes from "./routes/settings.js";
-import { uploadDir } from "./middleware/upload.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,8 +25,6 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 
-app.use("/uploads", express.static(uploadDir));
-
 app.use("/api/auth", authRoutes);
 app.use("/api/members", membersRoutes);
 app.use("/api/suggestions", suggestionsRoutes);
@@ -42,7 +39,7 @@ app.get("/api/health", (_req, res) => {
 const clientDist = path.join(__dirname, "../../client/dist");
 if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
-  app.get(/^(?!\/api\/)(?!\/uploads\/).*/, (req, res, next) => {
+  app.get(/^(?!\/api\/).*/, (req, res, next) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
     res.sendFile(path.join(clientDist, "index.html"), (err) => next(err));
   });

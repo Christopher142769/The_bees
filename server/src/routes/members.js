@@ -3,6 +3,11 @@ import Member from "../models/Member.js";
 import { requireAuth } from "../middleware/auth.js";
 import { uploadPhoto } from "../middleware/upload.js";
 import { slugify } from "../lib/slug.js";
+import {
+  destroyImage,
+  isCloudinaryConfigured,
+  uploadImageBuffer,
+} from "../lib/cloudinary.js";
 
 const router = Router();
 
@@ -99,6 +104,13 @@ router.patch("/:id", requireAuth, async (req, res) => {
 router.delete("/:id", requireAuth, async (req, res) => {
   const r = await Member.findByIdAndDelete(req.params.id);
   if (!r) return res.status(404).json({ error: "Introuvable" });
+  if (r.photoPublicId) {
+    try {
+      await destroyImage(r.photoPublicId);
+    } catch {
+      /* ignore */
+    }
+  }
   res.json({ ok: true });
 });
 
@@ -112,14 +124,33 @@ router.post(
     });
   },
   async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: "Fichier photo requis" });
+    try {
+      if (!isCloudinaryConfigured()) {
+        return res
+          .status(500)
+          .json({ error: "Cloudinary non configuré côté serveur" });
+      }
+      if (!req.file) {
+        return res.status(400).json({ error: "Fichier photo requis" });
+      }
+      const member = await Member.findById(req.params.id);
+      if (!member) return res.status(404).json({ error: "Membre introuvable" });
+      const result = await uploadImageBuffer(req.file, "the-bees/members");
+      const oldPublicId = member.photoPublicId;
+      member.photoPath = result.secure_url;
+      member.photoPublicId = result.public_id;
+      await member.save();
+      if (oldPublicId && oldPublicId !== result.public_id) {
+        try {
+          await destroyImage(oldPublicId);
+        } catch {
+          /* ignore */
+        }
+      }
+      res.json(member);
+    } catch (e) {
+      res.status(400).json({ error: e.message || "Upload impossible" });
     }
-    const member = await Member.findById(req.params.id);
-    if (!member) return res.status(404).json({ error: "Membre introuvable" });
-    member.photoPath = `/uploads/${req.file.filename}`;
-    await member.save();
-    res.json(member);
   }
 );
 

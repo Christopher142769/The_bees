@@ -1,10 +1,13 @@
 import { Router } from "express";
-import fs from "fs";
-import path from "path";
 import SiteSettings from "../models/SiteSettings.js";
 import Media from "../models/Media.js";
 import { requireAuth } from "../middleware/auth.js";
-import { uploadPhoto, uploadDir } from "../middleware/upload.js";
+import { uploadPhoto } from "../middleware/upload.js";
+import {
+  destroyImage,
+  isCloudinaryConfigured,
+  uploadImageBuffer,
+} from "../lib/cloudinary.js";
 
 const router = Router();
 
@@ -14,12 +17,6 @@ async function getDoc() {
     doc = await SiteSettings.create({});
   }
   return doc;
-}
-
-function absFromPublic(publicPath) {
-  if (!publicPath || !publicPath.startsWith("/uploads/")) return null;
-  const rel = publicPath.replace(/^\/uploads\//, "");
-  return path.join(uploadDir, rel);
 }
 
 router.get("/", async (_req, res) => {
@@ -41,27 +38,36 @@ router.post(
     });
   },
   async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: "Fichier logo requis" });
-    }
-    const doc = await getDoc();
-    const oldPath = doc.logoPath;
-    const newPath = `/uploads/${req.file.filename}`;
-    doc.logoPath = newPath;
-    await doc.save();
-    if (oldPath && oldPath !== newPath) {
-      const full = absFromPublic(oldPath);
-      try {
-        if (full && fs.existsSync(full)) fs.unlinkSync(full);
-      } catch {
-        /* ignore */
+    try {
+      if (!isCloudinaryConfigured()) {
+        return res
+          .status(500)
+          .json({ error: "Cloudinary non configuré côté serveur" });
       }
+      if (!req.file) {
+        return res.status(400).json({ error: "Fichier logo requis" });
+      }
+      const doc = await getDoc();
+      const result = await uploadImageBuffer(req.file, "the-bees/logo");
+      const oldPublicId = doc.logoPublicId;
+      doc.logoPath = result.secure_url;
+      doc.logoPublicId = result.public_id;
+      await doc.save();
+      if (oldPublicId && oldPublicId !== result.public_id) {
+        try {
+          await destroyImage(oldPublicId);
+        } catch {
+          /* ignore */
+        }
+      }
+      res.json({
+        heroImagePath: doc.heroImagePath || "",
+        hiveImagePath: doc.hiveImagePath || "",
+        logoPath: doc.logoPath || "",
+      });
+    } catch (e) {
+      res.status(400).json({ error: e.message || "Upload impossible" });
     }
-    res.json({
-      heroImagePath: doc.heroImagePath || "",
-      hiveImagePath: doc.hiveImagePath || "",
-      logoPath: doc.logoPath || "",
-    });
   }
 );
 
@@ -71,7 +77,7 @@ router.patch("/", requireAuth, async (req, res) => {
 
   async function validateMediaPath(p) {
     if (p === "" || p == null) return "";
-    if (typeof p !== "string" || !p.startsWith("/uploads/media/")) {
+    if (typeof p !== "string") {
       throw new Error("Chemin média invalide");
     }
     const exists = await Media.findOne({ path: p });
@@ -89,12 +95,12 @@ router.patch("/", requireAuth, async (req, res) => {
     if (logoPath !== undefined) {
       if (logoPath === "" || logoPath === null) {
         const doc = await getDoc();
-        const old = doc.logoPath;
+        const oldPublicId = doc.logoPublicId;
         update.logoPath = "";
-        if (old) {
-          const full = absFromPublic(old);
+        update.logoPublicId = "";
+        if (oldPublicId) {
           try {
-            if (full && fs.existsSync(full)) fs.unlinkSync(full);
+            await destroyImage(oldPublicId);
           } catch {
             /* ignore */
           }
