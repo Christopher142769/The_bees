@@ -1,0 +1,21 @@
+# Blueprint Render : https://render.com/docs/blueprint-spec
+# Crée un Web Service Node ; ajoutez MongoDB Atlas (externe) + variables d’environnement dans le tableau de bord.
+
+services:
+  - type: web
+    name: the-bees
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run render-build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
