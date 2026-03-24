@@ -86,12 +86,12 @@ export default function Home() {
           </div>
           <div className="hero-reveal hero-reveal--cta">
             <div className="hero-cta-row">
-              <a href="#membres" className="btn-primary">
-                Découvrir l’équipe
-              </a>
-              <Link to="/plan-action" className="btn-ghost-light">
+              <Link to="/plan-action" className="btn-primary btn-primary-plan">
                 Plan d'action
               </Link>
+              <a href="#membres" className="btn-ghost-light">
+                Découvrir l’équipe
+              </a>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function Home() {
                 className={`hive-image-inner ${!hiveSrc ? "hive-image-inner--placeholder" : ""}`}
               >
                 {hiveSrc ? (
-                  <img src={hiveSrc} alt="Ruche et abeilles — esprit The BEES" />
+                  <img src={hiveSrc} alt="" />
                 ) : null}
               </div>
             </div>

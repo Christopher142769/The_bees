@@ -744,6 +744,24 @@ button {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
+.btn-primary-plan {
+  background: linear-gradient(140deg, #ffd95a 0%, #f0c016 46%, #e09f00 100%);
+  color: #1f1608;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow:
+    0 0 0 1px rgba(122, 84, 0, 0.14),
+    0 10px 30px rgba(232, 168, 14, 0.5),
+    inset 0 1px 0 rgba(255, 250, 220, 0.9);
+}
+
+.btn-primary-plan:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow:
+    0 0 0 1px rgba(122, 84, 0, 0.2),
+    0 14px 36px rgba(232, 168, 14, 0.58),
+    inset 0 1px 0 rgba(255, 252, 232, 1);
+}
+
 /* —— Sections —— */
 .section {
   padding: 100px 24px;
@@ -760,7 +778,10 @@ button {
 
 /* —— Esprit ruche (split + carte image) —— */
 .hive-section {
-  background: linear-gradient(180deg, var(--white) 0%, var(--gray-light) 100%);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(236, 215, 160, 0.22), transparent 34%),
+    radial-gradient(circle at 90% 15%, rgba(214, 191, 135, 0.15), transparent 30%),
+    linear-gradient(180deg, #f7f2e7 0%, #efe8da 52%, #f4ede1 100%);
   padding-top: 110px;
   padding-bottom: 110px;
 }
@@ -928,23 +949,31 @@ button {
 
 .hive-image-card {
   position: relative;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hive-image-card:hover {
+  transform: translateY(-6px) rotate(-0.35deg);
 }
 
 .hive-image-inner {
-  border-radius: var(--radius-lg);
+  border-radius: 26px;
   overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 30px 70px rgba(96, 67, 36, 0.2),
+    0 0 0 1px rgba(121, 86, 42, 0.12),
+    0 2px 0 rgba(255, 255, 255, 0.6) inset;
   /* Même format carré que les cartes membres (type 1080×1080) */
   aspect-ratio: 1 / 1;
-  background: var(--black-soft);
+  background: linear-gradient(155deg, #f4ecdf 0%, #ece2d0 56%, #e3d7c1 100%);
 }
 
 .hive-image-inner--placeholder {
   background: linear-gradient(
-    160deg,
-    #e8e4dc 0%,
-    #f5f2eb 45%,
-    #ddd8cf 100%
+    155deg,
+    #f3ead8 0%,
+    #eaddc7 50%,
+    #dccdb1 100%
   );
   min-height: min(280px, 72vw);
 }
