@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, assetUrl } from "../api";
+import { DEFAULT_ACTION_PLAN_TEXT } from "../constants/actionPlanDefault.js";
 
 const EMPTY_FORM = {
   name: "",
@@ -38,6 +39,7 @@ export default function Dashboard() {
     heroImagePath: "",
     hiveImagePath: "",
     logoPath: "",
+    actionPlanText: DEFAULT_ACTION_PLAN_TEXT,
   });
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
@@ -257,6 +259,28 @@ export default function Dashboard() {
       setSettings(cfg);
       flash(true, "Logo supprimé.");
       await refresh();
+    } catch (ex) {
+      flash(false, ex.message || "Erreur");
+    }
+  }
+
+  async function saveActionPlan() {
+    try {
+      const cfg = await api.patchSettings({
+        actionPlanText: settings.actionPlanText || DEFAULT_ACTION_PLAN_TEXT,
+      });
+      setSettings(cfg);
+      flash(true, "Plan d'action mis a jour.");
+    } catch (ex) {
+      flash(false, ex.message || "Erreur");
+    }
+  }
+
+  async function resetActionPlan() {
+    try {
+      const cfg = await api.patchSettings({ actionPlanText: DEFAULT_ACTION_PLAN_TEXT });
+      setSettings(cfg);
+      flash(true, "Plan d'action reinitialise.");
     } catch (ex) {
       flash(false, ex.message || "Erreur");
     }
@@ -645,6 +669,28 @@ export default function Dashboard() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+            <div className="dash-action-plan-editor">
+              <h3 className="dash-subh">Page "Plan d'action"</h3>
+              <p className="hint">
+                Ce texte alimente la page publique <code>/plan-action</code>. Conservez
+                le format: titre entre * * , sections entre _ _ et puces avec "-".
+              </p>
+              <textarea
+                value={settings.actionPlanText || ""}
+                onChange={(e) =>
+                  setSettings((prev) => ({ ...prev, actionPlanText: e.target.value }))
+                }
+                rows={20}
+              />
+              <div className="dash-plan-actions">
+                <button type="button" className="dash-btn-sm gold" onClick={saveActionPlan}>
+                  Enregistrer le plan
+                </button>
+                <button type="button" className="dash-btn-sm" onClick={resetActionPlan}>
+                  Revenir au plan par defaut
+                </button>
               </div>
             </div>
           </section>

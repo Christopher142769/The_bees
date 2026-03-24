@@ -8,6 +8,7 @@ import {
   isCloudinaryConfigured,
   uploadImageBuffer,
 } from "../lib/cloudinary.js";
+import { DEFAULT_ACTION_PLAN_TEXT } from "../lib/defaultActionPlan.js";
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.get("/", async (_req, res) => {
     heroImagePath: doc.heroImagePath || "",
     hiveImagePath: doc.hiveImagePath || "",
     logoPath: doc.logoPath || "",
+    actionPlanText: doc.actionPlanText || DEFAULT_ACTION_PLAN_TEXT,
   });
 });
 
@@ -64,6 +66,7 @@ router.post(
         heroImagePath: doc.heroImagePath || "",
         hiveImagePath: doc.hiveImagePath || "",
         logoPath: doc.logoPath || "",
+        actionPlanText: doc.actionPlanText || DEFAULT_ACTION_PLAN_TEXT,
       });
     } catch (e) {
       res.status(400).json({ error: e.message || "Upload impossible" });
@@ -72,7 +75,7 @@ router.post(
 );
 
 router.patch("/", requireAuth, async (req, res) => {
-  const { heroImagePath, hiveImagePath, logoPath } = req.body || {};
+  const { heroImagePath, hiveImagePath, logoPath, actionPlanText } = req.body || {};
   const update = {};
 
   async function validateMediaPath(p) {
@@ -109,6 +112,14 @@ router.patch("/", requireAuth, async (req, res) => {
         return res.status(400).json({ error: "Utilisez POST /logo pour le logo" });
       }
     }
+    if (actionPlanText !== undefined) {
+      if (typeof actionPlanText !== "string") {
+        throw new Error("Le plan d'action doit etre un texte");
+      }
+      update.actionPlanText = actionPlanText.trim()
+        ? actionPlanText
+        : DEFAULT_ACTION_PLAN_TEXT;
+    }
     if (Object.keys(update).length === 0) {
       return res.status(400).json({ error: "Aucun champ à mettre à jour" });
     }
@@ -121,6 +132,7 @@ router.patch("/", requireAuth, async (req, res) => {
       heroImagePath: doc.heroImagePath || "",
       hiveImagePath: doc.hiveImagePath || "",
       logoPath: doc.logoPath || "",
+      actionPlanText: doc.actionPlanText || DEFAULT_ACTION_PLAN_TEXT,
     });
   } catch (e) {
     res.status(400).json({ error: e.message || "Erreur" });

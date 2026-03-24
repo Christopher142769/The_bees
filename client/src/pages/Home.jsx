@@ -89,9 +89,9 @@ export default function Home() {
               <a href="#membres" className="btn-primary">
                 Découvrir l’équipe
               </a>
-              <a href="#ruche" className="btn-ghost-light">
-                Notre vision
-              </a>
+              <Link to="/plan-action" className="btn-ghost-light">
+                Plan d'action
+              </Link>
             </div>
           </div>
         </div>

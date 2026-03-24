@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { api } from "../api.js";
+import { DEFAULT_ACTION_PLAN_TEXT } from "../constants/actionPlanDefault.js";
 
 const SettingsContext = createContext(null);
 
@@ -21,6 +22,7 @@ export function SettingsProvider({ children }) {
         heroImagePath: "",
         hiveImagePath: "",
         logoPath: "",
+        actionPlanText: DEFAULT_ACTION_PLAN_TEXT,
       });
     }
   }, []);

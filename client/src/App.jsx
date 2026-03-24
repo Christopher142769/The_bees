@@ -7,6 +7,7 @@ import LoadingScreen from "./components/LoadingScreen.jsx";
 import Home from "./pages/Home.jsx";
 import Member from "./pages/Member.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import ActionPlan from "./pages/ActionPlan.jsx";
 
 function isAdminRoute(pathname) {
   return pathname === "/admin" || pathname === "/dashboard";
@@ -53,6 +54,7 @@ export default function App() {
         <div className="app-shell app-shell--ready">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/plan-action" element={<ActionPlan />} />
             <Route path="/membre/:slug" element={<Member />} />
             <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
             <Route path="/admin" element={<Dashboard />} />
