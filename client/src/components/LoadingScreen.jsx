@@ -5,6 +5,7 @@ import { useSiteSettings } from "../context/SettingsContext.jsx";
 import { HexSvg } from "./SectionHexagons.jsx";
 
 const WORDS = ["Welcome", "to", "the", "hive"];
+const ADMIN_PATH = "/console/secure-7f9k2x-ops-vault-93a1e6d4";
 
 /** Hexagones dispersés, vitesses / délais variés pour effet ruche */
 const LOADING_HEXES = [
@@ -132,7 +133,7 @@ export default function LoadingScreen({ onComplete }) {
       onCompleteRef.current();
     };
 
-    if (pathname === "/admin" || pathname === "/dashboard") {
+    if (pathname === ADMIN_PATH) {
       finish();
       return;
     }
@@ -158,7 +159,7 @@ export default function LoadingScreen({ onComplete }) {
     };
   }, [ready, pathname]);
 
-  if (pathname === "/admin" || pathname === "/dashboard") return null;
+  if (pathname === ADMIN_PATH) return null;
 
   const logoSrc = settings?.logoPath ? assetUrl(settings.logoPath) : "";
 

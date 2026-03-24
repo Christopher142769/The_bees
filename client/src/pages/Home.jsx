@@ -193,7 +193,7 @@ export default function Home() {
           <div className="empty-state" style={{ color: "rgba(255,255,255,0.5)" }}>
             <p>Aucun membre pour le moment.</p>
             <p style={{ fontSize: 14, marginTop: 8 }}>
-              Ajoutez-les depuis l’administration (/admin).
+              Ajoutez-les depuis l’administration (route privee).
             </p>
           </div>
         )}

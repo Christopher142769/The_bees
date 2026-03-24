@@ -9,8 +9,10 @@ import Member from "./pages/Member.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import ActionPlan from "./pages/ActionPlan.jsx";
 
+const ADMIN_PATH = "/console/secure-7f9k2x-ops-vault-93a1e6d4";
+
 function isAdminRoute(pathname) {
-  return pathname === "/admin" || pathname === "/dashboard";
+  return pathname === ADMIN_PATH;
 }
 
 /** Intro à chaque chargement (sauf zone admin). */
@@ -56,8 +58,9 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/plan-action" element={<ActionPlan />} />
             <Route path="/membre/:slug" element={<Member />} />
-            <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
-            <Route path="/admin" element={<Dashboard />} />
+            <Route path="/admin" element={<Navigate to={ADMIN_PATH} replace />} />
+            <Route path="/dashboard" element={<Navigate to={ADMIN_PATH} replace />} />
+            <Route path={ADMIN_PATH} element={<Dashboard />} />
           </Routes>
         </div>
       )}
