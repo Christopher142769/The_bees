@@ -34,10 +34,15 @@ async function request(path, options = {}) {
 export const api = {
   getMembers: () => request("/api/members"),
   getMember: (slug) => request(`/api/members/${encodeURIComponent(slug)}`),
-  login: (password) =>
-    request("/api/auth/login", {
+  loginStart: (password) =>
+    request("/api/auth/login/start", {
       method: "POST",
       body: JSON.stringify({ password }),
+    }),
+  loginVerify: (challengeId, code) =>
+    request("/api/auth/login/verify", {
+      method: "POST",
+      body: JSON.stringify({ challengeId, code }),
     }),
   createMember: (body) =>
     request("/api/members", { method: "POST", body: JSON.stringify(body) }),

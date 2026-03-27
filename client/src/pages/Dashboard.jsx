@@ -29,7 +29,11 @@ const NAV = [
 
 export default function Dashboard() {
   const token = localStorage.getItem("bees_token");
-  const [password, setPassword] = useState("");
+  const [passwordHash, setPasswordHash] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [challengeId, setChallengeId] = useState("");
+  const [twoFactorPending, setTwoFactorPending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [tab, setTab] = useState("members");
   const [members, setMembers] = useState([]);
@@ -50,6 +54,24 @@ export default function Dashboard() {
 
   const authed = !!token;
 
+  useEffect(() => {
+    const exp = Number(localStorage.getItem("bees_token_exp") || "0");
+    if (!token || !exp) return;
+    if (Date.now() >= exp) {
+      localStorage.removeItem("bees_token");
+      localStorage.removeItem("bees_token_exp");
+      window.location.reload();
+      return;
+    }
+    const timeoutMs = exp - Date.now();
+    const id = setTimeout(() => {
+      localStorage.removeItem("bees_token");
+      localStorage.removeItem("bees_token_exp");
+      window.location.reload();
+    }, timeoutMs);
+    return () => clearTimeout(id);
+  }, [token]);
+
   const refresh = useCallback(async () => {
     if (!localStorage.getItem("bees_token")) return;
     try {
@@ -65,6 +87,7 @@ export default function Dashboard() {
       setSettings(cfg);
     } catch {
       localStorage.removeItem("bees_token");
+      localStorage.removeItem("bees_token_exp");
       window.location.reload();
     }
   }, []);
@@ -76,18 +99,40 @@ export default function Dashboard() {
   async function handleLogin(e) {
     e.preventDefault();
     setLoginError("");
+    setIsSubmitting(true);
     try {
-      const { token: t } = await api.login(password);
+      if (!twoFactorPending) {
+        const { challengeId: id } = await api.loginStart(passwordHash);
+        setChallengeId(id);
+        setTwoFactorPending(true);
+        setLoginError("");
+        return;
+      }
+      const { token: t, expiresAt } = await api.loginVerify(challengeId, otpCode);
       localStorage.setItem("bees_token", t);
-      setPassword("");
+      localStorage.setItem("bees_token_exp", String(expiresAt || 0));
+      setPasswordHash("");
+      setOtpCode("");
+      setChallengeId("");
+      setTwoFactorPending(false);
       window.location.reload();
-    } catch {
-      setLoginError("Mot de passe incorrect.");
+    } catch (ex) {
+      setLoginError(ex.message || "Connexion impossible.");
+    } finally {
+      setIsSubmitting(false);
     }
+  }
+
+  function resetLoginFlow() {
+    setTwoFactorPending(false);
+    setChallengeId("");
+    setOtpCode("");
+    setLoginError("");
   }
 
   function logout() {
     localStorage.removeItem("bees_token");
+    localStorage.removeItem("bees_token_exp");
     window.location.reload();
   }
 
@@ -298,18 +343,43 @@ export default function Dashboard() {
       <div className="page dashboard-login-page">
         <div className="dashboard-login">
           <h1>Dashboard The BEES</h1>
-          <p className="login-sub">Accès réservé au bureau. Entrez le mot de passe.</p>
+          <p className="login-sub">
+            Acces reserve au bureau. Entrez le hash admin puis validez le code recu par
+            e-mail.
+          </p>
           <form onSubmit={handleLogin}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mot de passe"
-              autoComplete="current-password"
-            />
+            {!twoFactorPending ? (
+              <input
+                type="password"
+                value={passwordHash}
+                onChange={(e) => setPasswordHash(e.target.value)}
+                placeholder="Hash admin"
+                autoComplete="current-password"
+              />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={otpCode}
+                  onChange={(e) =>
+                    setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  placeholder="Code a 6 chiffres"
+                  autoComplete="one-time-code"
+                />
+                <button type="button" className="btn-muted" onClick={resetLoginFlow}>
+                  Recommencer la connexion
+                </button>
+              </>
+            )}
             {loginError && <p className="error-text">{loginError}</p>}
             <button type="submit" className="btn-login">
-              Connexion
+              {isSubmitting
+                ? "Verification..."
+                : twoFactorPending
+                  ? "Valider le code"
+                  : "Envoyer le code"}
             </button>
           </form>
           <Link to="/" className="back-link">

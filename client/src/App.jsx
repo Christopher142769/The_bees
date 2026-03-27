@@ -8,8 +8,26 @@ import Home from "./pages/Home.jsx";
 import Member from "./pages/Member.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import ActionPlan from "./pages/ActionPlan.jsx";
+import { ADMIN_PATH } from "./constants/adminPath.js";
 
-const ADMIN_PATH = "/console/secure-7f9k2x-ops-vault-93a1e6d4";
+function SuspiciousRouteTrap() {
+  useEffect(() => {
+    window.alert(
+      "Ohlala, que fais-tu encore ici ?! 🤯🚨💀\nDesole pour l'imprudence. Retourne a la page publique."
+    );
+  }, []);
+
+  return (
+    <div className="page dashboard-login-page">
+      <div className="dashboard-login">
+        <h1>🚫 Acces bloque</h1>
+        <p className="login-sub">🧨🔥👾🛑🛡️</p>
+        <p className="login-sub">Desole pour l'imprudence.</p>
+        <Navigate to="/" replace />
+      </div>
+    </div>
+  );
+}
 
 function isAdminRoute(pathname) {
   return pathname === ADMIN_PATH;
@@ -58,8 +76,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/plan-action" element={<ActionPlan />} />
             <Route path="/membre/:slug" element={<Member />} />
-            <Route path="/admin" element={<Navigate to={ADMIN_PATH} replace />} />
-            <Route path="/dashboard" element={<Navigate to={ADMIN_PATH} replace />} />
+            <Route path="/admin" element={<SuspiciousRouteTrap />} />
+            <Route path="/dashboard" element={<SuspiciousRouteTrap />} />
             <Route path={ADMIN_PATH} element={<Dashboard />} />
           </Routes>
         </div>

@@ -3,10 +3,9 @@ import { useLocation } from "react-router-dom";
 import { assetUrl } from "../api.js";
 import { useSiteSettings } from "../context/SettingsContext.jsx";
 import { HexSvg } from "./SectionHexagons.jsx";
+import { ADMIN_PATH } from "../constants/adminPath.js";
 
 const WORDS = ["Welcome", "to", "the", "hive"];
-const ADMIN_PATH = "/console/secure-7f9k2x-ops-vault-93a1e6d4";
-
 /** Hexagones dispersés, vitesses / délais variés pour effet ruche */
 const LOADING_HEXES = [
   { key: "a", cls: "loading-hex--a", sw: 10, d: 0, dur: 5.6, rev: false },

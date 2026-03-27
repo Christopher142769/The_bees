@@ -25,8 +25,10 @@ cp server/.env.example server/.env
 
 - `MONGODB_URI` — connexion MongoDB
 - `JWT_SECRET` — chaîne longue et secrète
-- `ADMIN_PASSWORD` — mot de passe du dashboard
+- `ADMIN_PASSWORD_HASH` — hash admin à taper tel quel dans l’écran de connexion
+- `ADMIN_2FA_EMAIL` — e-mail recevant le code OTP
 - `CLIENT_URL` — en dev : `http://localhost:5173`
+- `SMTP_*` + `MAIL_FROM` — SMTP pour l’envoi du code 2FA
 
 ## Lancer en développement
 
@@ -48,7 +50,7 @@ Ou tout d’un coup (après `npm install` à la racine pour `concurrently`) :
 npm run dev
 ```
 
-Ouvrez **http://localhost:5173**. Administration : **http://localhost:5173/admin** (l’ancienne URL `/dashboard` redirige vers `/admin`).
+Ouvrez **http://localhost:5173**. Administration : route privée non exposée (voir constante `client/src/constants/adminPath.js`).
 
 ## Production (aperçu)
 
@@ -66,7 +68,9 @@ Ouvrez **http://localhost:5173**. Administration : **http://localhost:5173/admin
 4. Variables d’environnement (tableau de bord Render) :
    - `MONGODB_URI` — URI Atlas
    - `JWT_SECRET` — chaîne longue et secrète
-   - `ADMIN_PASSWORD` — mot de passe admin
+  - `ADMIN_PASSWORD_HASH` — hash admin
+  - `ADMIN_2FA_EMAIL` — e-mail OTP
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` — envoi du code 2FA
    - `PORT` — laissé géré par Render (ne pas fixer en dur si vous suivez le code actuel)
    - Optionnel : `CLIENT_URL` = URL publique du service (ex. `https://the-bees.onrender.com`) si vous restreignez le CORS plus tard
 5. Optionnel : **Blueprint** via le fichier `render.yaml` à la racine du dépôt.
