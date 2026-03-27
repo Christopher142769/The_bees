@@ -2896,6 +2896,174 @@ a.btn-card {
   margin-top: 8px;
 }
 
+/* —— Piège visuel /admin —— */
+.admin-trap-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(240, 192, 22, 0.3), transparent 40%),
+    radial-gradient(circle at 80% 0%, rgba(121, 186, 91, 0.18), transparent 36%),
+    linear-gradient(180deg, #1b1208 0%, #120d07 55%, #0f0b06 100%);
+  overflow: hidden;
+}
+
+.admin-trap-root {
+  position: relative;
+  width: min(920px, 100%);
+  min-height: min(620px, 90vh);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: linear-gradient(160deg, rgba(19, 16, 10, 0.9), rgba(28, 20, 12, 0.92));
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.admin-trap-glow {
+  position: absolute;
+  top: -10%;
+  left: -8%;
+  right: -8%;
+  height: 42%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(240, 192, 22, 0.42) 0%,
+    rgba(240, 192, 22, 0.12) 38%,
+    rgba(240, 192, 22, 0) 72%
+  );
+  filter: blur(10px);
+  animation: adminTrapDrift 5.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.admin-trap-tree {
+  position: absolute;
+  left: 50%;
+  bottom: -130px;
+  width: clamp(170px, 26vw, 320px);
+  height: 300px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #6e4828 0%, #4f311c 55%, #3d2615 100%);
+  opacity: 0.75;
+  box-shadow: inset 0 12px 24px rgba(255, 255, 255, 0.1);
+}
+
+.admin-trap-leaf {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 84% 12% 82% 15%;
+  background: linear-gradient(145deg, #96d16c, #5ea74e);
+  box-shadow: 0 10px 22px rgba(66, 116, 49, 0.36);
+  animation: adminLeafFloat 3.4s ease-in-out infinite;
+}
+
+.admin-trap-leaf--a {
+  top: 22%;
+  left: 14%;
+  animation-delay: -0.2s;
+}
+
+.admin-trap-leaf--b {
+  top: 30%;
+  right: 16%;
+  transform: rotate(190deg);
+  animation-delay: -1.1s;
+}
+
+.admin-trap-leaf--c {
+  bottom: 24%;
+  right: 28%;
+  transform: rotate(52deg);
+  animation-delay: -1.8s;
+}
+
+.admin-trap-card {
+  position: relative;
+  z-index: 2;
+  width: min(700px, calc(100% - 36px));
+  border-radius: 28px;
+  padding: clamp(26px, 5vw, 44px);
+  text-align: center;
+  color: #fff7e5;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(240, 192, 22, 0.28), rgba(240, 192, 22, 0) 45%),
+    linear-gradient(160deg, rgba(26, 20, 13, 0.9), rgba(18, 14, 10, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.admin-trap-kicker {
+  margin: 0 0 10px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 243, 214, 0.8);
+}
+
+.admin-trap-card h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4.6vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #ffd66b;
+  animation: adminTextPulse 2.4s ease-in-out infinite;
+}
+
+.admin-trap-message {
+  margin: 18px 0 8px;
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  color: #fff3d2;
+}
+
+.admin-trap-sub {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+@keyframes adminTextPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    text-shadow: 0 0 0 rgba(255, 214, 107, 0);
+  }
+  50% {
+    transform: translateY(-2px);
+    text-shadow: 0 0 20px rgba(255, 214, 107, 0.45);
+  }
+}
+
+@keyframes adminTrapDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes adminLeafFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(18deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(28deg);
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: 48px 24px;

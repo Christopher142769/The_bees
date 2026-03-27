@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import DynamicFavicon from "./components/DynamicFavicon.jsx";
 import Navbar from "./components/Navbar.jsx";
 import LoadingScreen from "./components/LoadingScreen.jsx";
@@ -11,19 +11,28 @@ import ActionPlan from "./pages/ActionPlan.jsx";
 import { ADMIN_PATH } from "./constants/adminPath.js";
 
 function SuspiciousRouteTrap() {
+  const navigate = useNavigate();
+
   useEffect(() => {
-    window.alert(
-      "Ohlala, que fais-tu encore ici ?! 🤯🚨💀\nDesole pour l'imprudence. Retourne a la page publique."
-    );
-  }, []);
+    const id = setTimeout(() => navigate("/", { replace: true }), 7000);
+    return () => clearTimeout(id);
+  }, [navigate]);
 
   return (
-    <div className="page dashboard-login-page">
-      <div className="dashboard-login">
-        <h1>🚫 Acces bloque</h1>
-        <p className="login-sub">🧨🔥👾🛑🛡️</p>
-        <p className="login-sub">Desole pour l'imprudence.</p>
-        <Navigate to="/" replace />
+    <div className="page admin-trap-page">
+      <div className="admin-trap-root">
+        <div className="admin-trap-glow" aria-hidden />
+        <div className="admin-trap-tree" aria-hidden />
+        <div className="admin-trap-leaf admin-trap-leaf--a" aria-hidden />
+        <div className="admin-trap-leaf admin-trap-leaf--b" aria-hidden />
+        <div className="admin-trap-leaf admin-trap-leaf--c" aria-hidden />
+
+        <div className="admin-trap-card">
+          <p className="admin-trap-kicker">Salle protegee</p>
+          <h1>Qui ose vouloir entrer dans la salle du trone de LA REINE ?</h1>
+          <p className="admin-trap-message">Jeune abeille, retourne a ta ruche.</p>
+          <p className="admin-trap-sub">Redirection automatique en cours...</p>
+        </div>
       </div>
     </div>
   );
